@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/compfile.png</file>
+        <file>images/copy.png</file>
+        <file>images/new.png</file>
+        <file>images/open.png</file>
+        <file>images/paste.png</file>
+        <file>images/save.png</file>
+        <file>images/exit.jpg</file>
+        <file>images/mips.jpg</file>
+        <file>images/Mips_1.jpg</file>
+        <file>images/discompile.png</file>
+        <file>images/init.png</file>
+    </qresource>
+</RCC>
