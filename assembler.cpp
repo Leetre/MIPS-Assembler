@@ -98,7 +98,7 @@ QString Assembler::Compile(QString &CompileString)
     return Join_enter(resultList);
 }
 
-in Assembler::Case_contained(QString& Op){
+int Assembler::Case_contained(QString& Op){
     int Case;
     if(STD_Instruction.contains(Op)){
         Case = 0;
