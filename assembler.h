@@ -41,6 +41,7 @@ private:
 
     QStringList STI_Instruction;
     QStringList STII_Instruction;
+    QStringList BSTI_Instruction;
 
     QStringList J_Instruction;
 

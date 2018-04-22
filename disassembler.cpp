@@ -76,9 +76,10 @@ Disassembler::Disassembler()
     S_Instruction << "jr";
     STI_Instruction << "addi" << "addiu" << "andi"
                     << "ori" << "xori" << "slti"
-                    << "sltiu" << "beq" << "bne";
+                    << "sltiu";
     STII_Instruction << "sw" << "lw";
     J_Instruction << "j" << "jal";
+    BSTI_Instruction << "beq" << "bne";
 }
 
 QString Disassembler::Discompile(QString &CompileString)
@@ -151,12 +152,19 @@ QString Disassembler::convertBinToD(QString BinString){
     return resultstring;
 }
 
-QString Disassembler::convertBinToHex(QString BinString){
+QString Disassembler::convertBinToDFour(QString BinString){
     bool ok;
-    int Bin;
+    int D;
     QString resultstring;
-    Bin = BinString.toInt(&ok, 2);
-    resultstring = QString::number(Bin, 16);
+    if(BinString[0] == '0'){
+        D = BinString.toInt(&ok, 2) * 4;
+        resultstring = QString::number(D, 10);
+    }
+    else{
+        QString BinStringFabs = convertToFabs(BinString);
+        D = BinStringFabs.toInt(&ok, 2) * 4;
+        resultstring = "-" + QString::number(D, 10);
+    }
     return resultstring;
 }
 
@@ -193,6 +201,9 @@ int Disassembler::Cases_contained(QString& Op){
     else if(J_Instruction.contains(Op)){
         Case = 5;
     }
+    else if(BSTI_Instruction.contains(Op)){
+        Case = 6;
+    }
     return Case;
 }
 
@@ -221,7 +232,12 @@ QString Disassembler::InstructionToMipsCode(QString thisLine)
                 MipsCode = MipsCode + Reg[GetSubString(thisLine, 6, 11)] + ")" +";";
                 break;
             case 5:
-                MipsCode = MipsCode + " " + convertBinToHex(GetSubString(thisLine, 6, 32)) + ";";
+                MipsCode = MipsCode + " " + convertBinToDFour(GetSubString(thisLine, 6, 32)) + ";";
+                break;
+            case 6:
+                MipsCode = MipsCode + " " + Reg[GetSubString(thisLine, 11, 16)];
+                MipsCode = MipsCode + " " + Reg[GetSubString(thisLine, 6, 11)];
+                MipsCode = MipsCode + " " + convertBinToDFour(GetSubString(thisLine, 16, 32)) + ";";
                 break;
         }
     }

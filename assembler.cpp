@@ -76,8 +76,9 @@ Assembler::Assembler()
     S___Instruction << "jr";
     STI_Instruction << "addi" << "addiu" << "andi"
                     << "ori" << "xori" << "slti"
-                    << "sltiu" << "beq" << "bne";
+                    << "sltiu";
     STII_Instruction << "sw" << "lw";
+    BSTI_Instruction << "beq" << "bne";
     J_Instruction << "j" << "jal";
 }
 
@@ -104,7 +105,7 @@ QString Assembler::Compile(QString &CompileString)
         }
         else{
             label = thisLine.left(labelIndex);
-            LabelAddr.insert(label, QString::number(addr, 16));
+            LabelAddr.insert(label, QString::number(addr, 10));
             thisvalidLine = GetSubstring(thisLine.left(commentIndex), labelIndex+1);
         }
 
@@ -174,6 +175,9 @@ int Assembler::Case_contained(QString& Op){
     else if(J_Instruction.contains(Op)){
         Case = 5;
     }
+    else if(BSTI_Instruction.contains(Op)){
+        Case = 6;
+    }
     return Case;
 }
 
@@ -220,7 +224,7 @@ QString Assembler::CompleteMachineCode(QString thisLine)
         case 3:
             change_t(my_stringlist.at(1), machineCode);
             change_s(my_stringlist.at(2), machineCode);
-            change_labelori(thisLine, my_stringlist.at(3), machineCode);
+            change_i(my_stringlist.at(3), machineCode);
             break;
         case 4:
             change_t(my_stringlist.at(1), machineCode);
@@ -229,6 +233,11 @@ QString Assembler::CompleteMachineCode(QString thisLine)
             break;
         case 5:
             change_target(my_stringlist.at(1), machineCode);
+            break;
+        case 6:
+            change_t(my_stringlist.at(1), machineCode);
+            change_s(my_stringlist.at(2), machineCode);
+            change_labelori(thisLine, my_stringlist.at(3), machineCode);
             break;
     }
     return machineCode;
@@ -266,6 +275,7 @@ void Assembler::change_labelori(QString& thisLine, const QString& label, QString
     offset = label.toInt(&ok, 10);
 
     if(ok == true){
+        offset = offset / 4;
         if(offset > 0){
             ImmediateCode = QString("%1").arg(offset, 16, 2, QChar('0'));
         }
@@ -277,7 +287,7 @@ void Assembler::change_labelori(QString& thisLine, const QString& label, QString
     else{
         int label_addr = LabelAddr[label].toInt(&ok, 16);
         PC = InstructionAddr[thisLine];
-        offset = label_addr - 4 - PC;
+        offset = (label_addr - 4 - PC) / 4;
         if(offset > 0){
             labelcode = QString("%1").arg(offset, 16, 2, QChar('0'));
         }
@@ -305,12 +315,13 @@ void Assembler::change_target(const QString& target, QString& to_machinecode)
 {
     bool ok;
     QString TargetCode;
-    long long resultint = target.toLongLong(&ok, 16);
+    long long resultint = target.toLongLong(&ok, 10);
     if(ok == true){
+        resultint = resultint / 4;
         TargetCode = QString("%1").arg(resultint, 26, 2, QChar('0'));
     }
     else{
-        resultint = LabelAddr[target].toLongLong(&ok, 16);
+        resultint = LabelAddr[target].toLongLong(&ok, 10) / 4;
         TargetCode = QString("%1").arg(resultint, 26, 2, QChar('0'));
     }
     to_machinecode.replace(6, 26, TargetCode);

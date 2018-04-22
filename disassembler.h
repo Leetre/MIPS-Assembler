@@ -19,7 +19,7 @@ public:
     QString convertToFabs(QString Bin);
     QString GetSubString(QString input, int beginposition, int endposition);
     QString convertBinToD(QString);
-    QString convertBinToHex(QString BinString);
+    QString convertBinToDFour(QString BinString);
 private:
     QString DisassembledString;
 
@@ -31,6 +31,7 @@ private:
     QStringList S_Instruction;
     QStringList STI_Instruction;
     QStringList STII_Instruction;
+    QStringList BSTI_Instruction;
     QStringList J_Instruction;
     QStringList MipsresultList;
 };
